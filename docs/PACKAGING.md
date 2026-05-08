@@ -410,8 +410,8 @@ jobs:
 ### Direct from GitHub
 
 ```bash
-npm install github:Paul-Geudens_argenta/yuki-openclaw-plugin#main
-npm install github:Paul-Geudens_argenta/yuki-openclaw-plugin#v0.1.0
+npm install github:tokaio-public/yuki-openclaw-plugin#main
+npm install github:tokaio-public/yuki-openclaw-plugin#v0.1.0
 ```
 
 ### Local Development

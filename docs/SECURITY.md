@@ -6,9 +6,15 @@
 - Required config missing -> fail closed.
 
 ## Logging and redaction
-- API keys, session IDs, invoice payloads, customer details, and bank details are redacted.
+- API keys, session IDs, UUID-form session tokens, invoice payloads, customer details, and bank details are redacted.
 - Sensitive payload logging is disabled by default.
 - Debug mode can include more context, still redacted unless explicitly allowed.
+- Tool outputs strip `rawData` fields unless `includeRawResponses` is explicitly enabled.
+
+## Runtime safeguards
+- SOAP responses are checked for HTTP status errors before XML parsing.
+- Public runtime config exposure does not include the raw access key.
+- Input validation for tool handlers is TypeBox-based with `additionalProperties: false`.
 
 ## Transport requirements
 - HTTPS endpoints only.
@@ -16,7 +22,7 @@
 
 ## Write-operation safety model
 - Write operations are disabled by default.
-- Future write tools must enforce:
+- Write tools enforce:
   - writeOperationsEnabled = true
   - dryRun = false
   - confirm = true

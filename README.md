@@ -2,14 +2,14 @@
 
 Production-focused OpenClaw plugin that connects agents to Yuki SOAP webservices with a strict safety model.
 
-Current implementation scope: Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, Phase 5, and Phase 6 (all phases completed).
+Current implementation scope: Phase 0 through Phase 8 (all phases completed).
 
 ## What it does
 
 - Connects to Yuki SOAP services over HTTPS.
 - Authenticates using a Yuki access key.
 - Caches session IDs with expiry handling.
-- Exposes 32 OpenClaw tools for diagnostics, domain management, accounting reports, invoice operations, contacts, projects, archive, VAT/backoffice workflow, and company snapshots:
+- Exposes 34 OpenClaw tools for diagnostics, domain management, accounting reports, invoice operations, contacts, projects, archive, VAT/backoffice workflow, and company snapshots:
 
 **Phase 1 & 2 Tools (Read-Only):**
 	- `yuki_health_check` — Validate connectivity
@@ -201,7 +201,9 @@ All CLI commands respect the same configuration (`.env`, YUKI_* variables) as th
 - Fail-closed config behavior.
 - HTTPS endpoints only.
 - Write operations disabled by default.
-- Planned write tools require explicit confirmation and dry-run override.
+- Write tools require explicit confirmation and dry-run override.
+- HTTP status failures are detected before SOAP XML parsing.
+- Raw upstream payload fields are removed from tool outputs unless explicitly enabled.
 
 See `docs/SECURITY.md` for details.
 

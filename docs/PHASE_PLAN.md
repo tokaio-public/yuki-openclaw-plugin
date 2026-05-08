@@ -116,7 +116,7 @@
     - VAT filing status check (return filed vs pending)
     - Backoffice issues check (open high-priority questions)
     - Workflow completion check (pending workflow items)
-  - Checklist status determination: on-track (no issues) | at-risk (warnings) | blocked (2+ high-priority questions) ✓
+  - Checklist status determination: on-track (no issues) | at-risk (warnings/pending items) | blocked (3+ high-priority questions) ✓
   - Completion percentage calculation (items completed vs total) ✓
   - Warning messages with actionable next steps ✓
   - 2 new read-only OpenClaw tools implemented:
@@ -125,7 +125,7 @@
   - Input schemas with administrationId and period (YYYY-MM) validation ✓
   - Client orchestration methods (getCompanySnapshot, generateMonthEndChecklist) ✓
   - Comprehensive unit tests (40+ test cases) with all 4 service checks verified ✓
-  - Manifest updated with 32 total OpenClaw tools (2 new Phase 6 read tools) ✓
+  - Manifest updated with 34 total OpenClaw tools (2 new Phase 6 read tools) ✓
 
 ## Phase 7 - CLI diagnostics
 - Status: implemented

@@ -31,7 +31,7 @@
 npm install @tokaio/openclaw-yuki
 
 # Option B: From source
-git clone https://github.com/Paul-Geudens_argenta/yuki-openclaw-plugin.git
+git clone https://github.com/tokaio-public/yuki-openclaw-plugin.git
 cd yuki-openclaw-plugin
 npm install
 npm run build
@@ -384,7 +384,7 @@ rm ~/.yuki-session
 
 ## Support & Resources
 
-- Plugin repo: https://github.com/Paul-Geudens_argenta/yuki-openclaw-plugin
+- Plugin repo: https://github.com/tokaio-public/yuki-openclaw-plugin
 - Yuki Support: https://support.yukiworks.be
 - OpenClaw Support: contact your provider
 - CLI reference: `yuki-cli help`
