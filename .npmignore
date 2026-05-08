@@ -1,0 +1,52 @@
+# Files to exclude from npm package
+
+# Development files
+tests/
+vitest.config.ts
+tsconfig.json
+.eslintrc*
+.prettierrc*
+.editorconfig
+.env*
+.env.example
+*.local
+
+# Source files (we publish dist/)
+src/
+
+# Git and version control
+.git/
+.gitignore
+.github/
+
+# CI/CD
+.github/workflows/
+.gitlab-ci.yml
+.travis.yml
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Build artifacts
+dist/
+node_modules/
+*.tsbuildinfo
+coverage/
+
+# Documentation (keep only README, LICENSE, and docs/)
+CHANGELOG.md
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Package lock files (let npm manage)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml

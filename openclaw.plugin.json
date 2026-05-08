@@ -1,0 +1,78 @@
+{
+  "id": "openclaw-yuki",
+  "name": "OpenClaw Yuki",
+  "description": "Secure Yuki SOAP tools for accounting data retrieval and guarded write operations",
+  "version": "0.1.0",
+  "contracts": {
+    "tools": [
+      "yuki_health_check",
+      "yuki_list_domains",
+      "yuki_get_current_domain",
+      "yuki_set_current_domain",
+      "yuki_list_administrations",
+      "yuki_get_trial_balance",
+      "yuki_search_transactions",
+      "yuki_get_transaction",
+      "yuki_get_receivables_summary",
+      "yuki_get_payables_summary",
+      "yuki_get_profit_and_loss",
+      "yuki_list_gl_accounts",
+      "yuki_get_sales_invoice_schema",
+      "yuki_get_purchase_invoice_schema",
+      "yuki_list_sales_items",
+      "yuki_list_purchase_items",
+      "yuki_submit_sales_invoice",
+      "yuki_submit_purchase_invoice",
+      "yuki_search_contacts",
+      "yuki_list_suppliers_customers",
+      "yuki_list_projects",
+      "yuki_get_project",
+      "yuki_search_documents",
+      "yuki_get_document_metadata",
+      "yuki_update_contact",
+      "yuki_update_project",
+      "yuki_download_document",
+      "yuki_upload_document",
+      "yuki_get_vat_return_statuses",
+      "yuki_list_vat_codes",
+      "yuki_get_outstanding_backoffice_questions",
+      "yuki_get_backoffice_workflow",
+      "yuki_get_company_snapshot",
+      "yuki_get_month_end_checklist"
+    ]
+  },
+  "activation": {
+    "onStartup": false,
+    "onCapabilities": ["tool"]
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "accessKey": { "type": "string" },
+      "country": { "type": "string", "enum": ["be", "nl"] },
+      "defaultDomainId": { "type": "number" },
+      "defaultAdministrationId": { "type": "number" },
+      "requestTimeoutMs": { "type": "number", "minimum": 500, "maximum": 120000 },
+      "maxCallsPerMinute": { "type": "number", "minimum": 1, "maximum": 10000 },
+      "maxCallsPerDay": { "type": "number", "minimum": 1, "maximum": 100000 },
+      "writeOperationsEnabled": { "type": "boolean" },
+      "defaultDryRun": { "type": "boolean" },
+      "logLevel": { "type": "string", "enum": ["error", "warn", "info", "debug"] },
+      "includeRawResponses": { "type": "boolean" },
+      "allowSensitiveDebugLogging": { "type": "boolean" }
+    },
+    "required": ["accessKey"]
+  },
+  "uiHints": {
+    "accessKey": {
+      "label": "Yuki API Access Key",
+      "placeholder": "xxxxx-xxxxx-xxxxx",
+      "sensitive": true
+    },
+    "country": {
+      "label": "Yuki country environment",
+      "placeholder": "be"
+    }
+  }
+}

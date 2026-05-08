@@ -1,0 +1,63 @@
+{
+  "name": "@tokaio/openclaw-yuki",
+  "version": "0.1.0",
+  "description": "OpenClaw plugin for secure Yuki SOAP webservice access",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "yuki-cli": "dist/cli/index.js"
+  },
+  "files": [
+    "dist",
+    "openclaw.plugin.json",
+    "README.md",
+    "LICENSE",
+    "docs"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rimraf dist",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:integration": "INTEGRATION_TESTS=true vitest run tests/integration",
+    "test:all": "npm run test:coverage && INTEGRATION_TESTS=true npm run test",
+    "prepublishOnly": "npm run clean && npm run build && npm run test:coverage",
+    "type-check": "tsc --noEmit",
+    "lint:types": "tsc --noEmit --noUnusedLocals --noUnusedParameters"
+  },
+  "keywords": [
+    "openclaw",
+    "plugin",
+    "yuki",
+    "soap",
+    "accounting"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@sinclair/typebox": "^0.34.41",
+    "fast-xml-parser": "^4.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.17",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.8.3",
+    "vitest": "^2.1.8"
+  },
+  "peerDependencies": {
+    "openclaw": ">=2026.3.24-beta.2"
+  },
+  "openclaw": {
+    "extensions": [
+      "./src/index.ts"
+    ],
+    "runtimeExtensions": [
+      "./dist/index.js"
+    ],
+    "compat": {
+      "pluginApi": ">=2026.3.24-beta.2",
+      "minGatewayVersion": "2026.3.24-beta.2"
+    }
+  }
+}
