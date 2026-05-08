@@ -12,9 +12,10 @@ export interface Contact {
 }
 
 export interface ContactSearchResult {
-  id: string;
+  contactId: string;
   name?: string;
-  type?: string;
+  email?: string;
+  contactType?: string;
   rawData?: unknown;
 }
 
@@ -63,9 +64,10 @@ export class ContactService {
     return toArray(maybeRows).map((row) => {
       const item = row as Record<string, unknown>;
       return {
-        id: safeString(item.ContactID) ?? safeString(item.ID) ?? "",
-        name: safeString(item.Name),
-        type: safeString(item.Type) ?? safeString(item.ContactType),
+        contactId: safeString(item.ContactID) ?? safeString(item.ID) ?? "",
+        name: safeString(item.ContactName) ?? safeString(item.Name),
+        email: safeString(item.Email) ?? safeString(item.EmailAddress),
+        contactType: safeString(item.ContactType) ?? safeString(item.Type),
         rawData: row
       };
     });
@@ -88,9 +90,10 @@ export class ContactService {
     return toArray(maybeRows).map((row) => {
       const item = row as Record<string, unknown>;
       return {
-        id: safeString(item.ContactID) ?? safeString(item.ID) ?? "",
-        name: safeString(item.Name),
-        type: safeString(item.Type),
+        contactId: safeString(item.ContactID) ?? safeString(item.ID) ?? "",
+        name: safeString(item.ContactName) ?? safeString(item.Name),
+        email: safeString(item.Email) ?? safeString(item.EmailAddress),
+        contactType: safeString(item.ContactType) ?? safeString(item.Type),
         rawData: row
       };
     });

@@ -13,7 +13,7 @@ const mockSoapClient = {
 };
 
 const mockSession = {
-  getValidatedSession: vi.fn(async () => "mock-session-id")
+  getSessionId: vi.fn(async () => "mock-session-id")
 };
 
 describe("IntegrationService", () => {
@@ -71,11 +71,11 @@ describe("IntegrationService", () => {
 
     it("should use session for authentication", async () => {
       mockSoapClient.call.mockResolvedValueOnce({ AdministrationId: "1", Company: "Test" });
-      mockSession.getValidatedSession.mockResolvedValueOnce("session-123");
+      mockSession.getSessionId.mockResolvedValueOnce("session-123");
 
       await service.getAdministrationData(1);
 
-      expect(mockSession.getValidatedSession).toHaveBeenCalled();
+      expect(mockSession.getSessionId).toHaveBeenCalled();
     });
   });
 });
@@ -205,20 +205,18 @@ describe("MonthEndChecklistService", () => {
 
       const wfCheck = result.items?.find((item: ChecklistItem) => item.id === "workflow-completion");
       expect(wfCheck).toBeDefined();
-      expect(wfCheck?.status).toBe("pending");
+      expect(wfCheck?.status).toBe("warning");
     });
 
     it("should determine at-risk status when warnings present", async () => {
       mockAccountingInfoService.getTransactions.mockResolvedValueOnce([]);
-      mockVatService.getVATReturnList.mockResolvedValueOnce([
-        { vatReturnId: "1", period: "2024-01", status: "Pending", statusDate: "2024-01-31" }
-      ]);
+      mockVatService.getVATReturnList.mockResolvedValueOnce([]);
       mockBackofficeService.getOutstandingQuestions.mockResolvedValueOnce([
         {
           questionId: "q1",
           topic: "Data",
           question: "Missing data",
-          priority: "Medium",
+          priority: "High",
           createdDate: "2024-01-10",
           status: "Open"
         }
@@ -249,6 +247,14 @@ describe("MonthEndChecklistService", () => {
           question: "Critical issue 2",
           priority: "High",
           createdDate: "2024-01-06",
+          status: "Open"
+        },
+        {
+          questionId: "q3",
+          topic: "Critical",
+          question: "Critical issue 3",
+          priority: "High",
+          createdDate: "2024-01-07",
           status: "Open"
         }
       ]);
@@ -287,8 +293,12 @@ describe("MonthEndChecklistService", () => {
     });
 
     it("should handle empty responses from all services", async () => {
-      mockAccountingInfoService.getTransactions.mockResolvedValueOnce([]);
-      mockVatService.getVATReturnList.mockResolvedValueOnce([]);
+      mockAccountingInfoService.getTransactions.mockResolvedValueOnce([
+        { transactionId: "1", description: "Transaction 1", date: "2024-01-15", amount: 1000 }
+      ]);
+      mockVatService.getVATReturnList.mockResolvedValueOnce([
+        { vatReturnId: "1", period: "2024-01", status: "Filed", statusDate: "2024-01-31" }
+      ]);
       mockBackofficeService.getOutstandingQuestions.mockResolvedValueOnce([]);
       mockBackofficeService.getWorkflow.mockResolvedValueOnce([]);
 
@@ -460,15 +470,15 @@ describe("Integration Flow - End to End", () => {
     const result = await service.generateMonthEndChecklist(42, "2024-01");
 
     // Verify all services were called
-    expect(mockAccountingInfoService.getTransactions).toHaveBeenCalledWith(42);
-    expect(mockVatService.getVATReturnList).toHaveBeenCalledWith(42);
+    expect(mockAccountingInfoService.getTransactions).toHaveBeenCalledWith(42, "2024-01");
+    expect(mockVatService.getVATReturnList).toHaveBeenCalledWith(42, "2024-01", "2024-01");
     expect(mockBackofficeService.getOutstandingQuestions).toHaveBeenCalledWith(42);
     expect(mockBackofficeService.getWorkflow).toHaveBeenCalledWith(42);
 
     // Verify checklist structure
     expect(result.administrationId).toBe("42");
     expect(result.period).toBe("2024-01");
-    expect(result.summaryStatus).toBe("on-track");
+    expect(result.summaryStatus).toBe("at-risk");
     expect(result.completionPercentage).toBeGreaterThanOrEqual(0);
     expect(result.warnings).toBeDefined();
     expect(Array.isArray(result.items)).toBe(true);

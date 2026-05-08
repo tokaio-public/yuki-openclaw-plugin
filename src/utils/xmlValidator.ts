@@ -1,7 +1,9 @@
 /**
  * XML Validator for Yuki invoice documents
- * Performs basic well-formedness and structure validation
+ * Performs well-formedness and structure validation using fast-xml-parser.
  */
+
+import { XMLValidator } from "fast-xml-parser";
 
 export interface ValidationResult {
   valid: boolean;
@@ -18,41 +20,29 @@ export function validateXmlWellFormedness(xmlString: string): ValidationResult {
     return { valid: false, errors, warnings };
   }
 
+  // Check for null bytes (common corruption) before parser sees the string
+  if (xmlString.includes("\x00")) {
+    errors.push("XML document contains null bytes");
+    return { valid: false, errors, warnings };
+  }
+
   // Check for XML declaration (optional but recommended)
   if (!xmlString.trim().startsWith("<?xml")) {
     warnings.push("XML document should start with <?xml declaration");
   }
 
-  // Check for balanced tags (simple check)
-  const openTagCount = (xmlString.match(/<[^/][^>]*>/g) || []).length;
-  const closeTagCount = (xmlString.match(/<\/[^>]*>/g) || []).length;
-
-  if (openTagCount !== closeTagCount) {
-    errors.push(`Unbalanced XML tags: ${openTagCount} open tags, ${closeTagCount} close tags`);
-  }
-
-  // Try to detect unclosed CDATA sections
-  const cdataSections = (xmlString.match(/<!\[CDATA\[/g) || []).length;
-  const cdataEnds = (xmlString.match(/\]\]>/g) || []).length;
-
-  if (cdataSections !== cdataEnds) {
-    errors.push(`Unclosed CDATA sections: ${cdataSections} open, ${cdataEnds} closed`);
-  }
-
-  // Check for common XML pitfalls
+  // Warn about unescaped ampersands before structural validation
   if (xmlString.includes("&") && !xmlString.includes("&amp;") && !xmlString.includes("&#")) {
     warnings.push("Unescaped ampersands detected; use &amp; for literal &");
   }
 
-  if (xmlString.includes("<") && xmlString.includes(">")) {
-    // Basic sanity check: looks like XML
-  } else {
-    errors.push("Does not appear to be valid XML (missing < or >)");
-  }
-
-  // Check for null bytes (common corruption)
-  if (xmlString.includes("\x00")) {
-    errors.push("XML document contains null bytes");
+  // Delegate structural validation to fast-xml-parser (handles balanced tags,
+  // CDATA, encoding, attribute syntax, etc.)
+  const result = XMLValidator.validate(xmlString, { allowBooleanAttributes: true });
+  if (result !== true) {
+    const err = result.err;
+    errors.push(`XML parse error: ${err.msg} (line ${err.line}, col ${err.col})`);
+    return { valid: false, errors, warnings };
   }
 
   // Check XML size reasonableness

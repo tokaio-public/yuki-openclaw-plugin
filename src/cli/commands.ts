@@ -72,7 +72,7 @@ export class CLICommands {
     try {
       const config = this.client.config;
       const checks = {
-        accessKeySet: config.accessKey ? "✓" : "✗",
+        accessKeySet: config.accessKeyConfigured ? "✓" : "✗",
         countryValid: config.country ? "✓" : "✗",
         timeoutConfigured: config.requestTimeoutMs > 0 ? "✓" : "✗",
         logLevel: config.logLevel || "info",
@@ -83,7 +83,7 @@ export class CLICommands {
         maxCallsPerDay: config.maxCallsPerDay
       };
 
-      const hasErrors = !config.accessKey || !config.country;
+      const hasErrors = !config.accessKeyConfigured || !config.country;
 
       if (this.ctx.format === "json") {
         return {

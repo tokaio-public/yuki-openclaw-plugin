@@ -6,7 +6,8 @@ import {
   InvoiceSubmissionSchema,
   ContactUpdateSchema,
   ProjectUpdateSchema,
-  DocumentUploadSchema
+  DocumentUploadSchema,
+  DocumentDownloadSchema
 } from "./schemas.js";
 import { YukiClient, toErrorEnvelope } from "../yuki/client.js";
 import { assertWriteConfirmation } from "./confirmation.js";
@@ -278,17 +279,10 @@ export function buildWriteTools(getClient: () => YukiClient): OpenClawToolRegist
     {
       name: "yuki_download_document",
       description: "Download a document from the Yuki archive. Returns binary file content and metadata.",
-      parameters: {
-        type: "object" as const,
-        properties: {
-          documentId: { type: "string", description: "Document ID to download" }
-        },
-        required: ["documentId"],
-        additionalProperties: false
-      },
-      async execute(_toolCallId, params: Record<string, unknown>) {
+      parameters: DocumentDownloadSchema,
+      async execute(_toolCallId, params: Static<typeof DocumentDownloadSchema>) {
         try {
-          const result = await getClient().downloadDocument(params.documentId as string);
+          const result = await getClient().downloadDocument(params.documentId);
 
           return {
             content: [{ type: "text", text: JSON.stringify(result) }]

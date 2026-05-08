@@ -332,23 +332,37 @@ describe("Accounting Flow Tests", () => {
 
   describe("YukiClient Accounting Methods", () => {
     it("should get trial balance via client", async () => {
-      global.fetch = vi.fn().mockResolvedValueOnce({
-        ok: true,
-        text: vi.fn().mockResolvedValueOnce(
-          `<?xml version="1.0"?>
-           <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-             <soap:Body>
-               <GLAccountBalanceResponse xmlns="http://www.theyukicompany.com/">
-                 <GLAccountBalanceResult>
-                   <GLAccounts>
-                     <GLAccount><AccountCode>1000</AccountCode><AccountName>Assets</AccountName><DebitBalance>10000</DebitBalance><CreditBalance>0</CreditBalance></GLAccount>
-                   </GLAccounts>
-                 </GLAccountBalanceResult>
-               </GLAccountBalanceResponse>
-             </soap:Body>
-           </soap:Envelope>`
-        )
-      } as Response);
+      global.fetch = vi.fn()
+        .mockResolvedValueOnce({
+          ok: true,
+          text: vi.fn().mockResolvedValueOnce(
+            `<?xml version="1.0"?>
+             <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+               <soap:Body>
+                 <AuthenticateResponse xmlns="http://www.theyukicompany.com/">
+                   <AuthenticateResult>SESSION-123</AuthenticateResult>
+                 </AuthenticateResponse>
+               </soap:Body>
+             </soap:Envelope>`
+          )
+        } as Response)
+        .mockResolvedValueOnce({
+          ok: true,
+          text: vi.fn().mockResolvedValueOnce(
+            `<?xml version="1.0"?>
+             <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+               <soap:Body>
+                 <GLAccountBalanceResponse xmlns="http://www.theyukicompany.com/">
+                   <GLAccountBalanceResult>
+                     <GLAccounts>
+                       <GLAccount><AccountCode>1000</AccountCode><AccountName>Assets</AccountName><DebitBalance>10000</DebitBalance><CreditBalance>0</CreditBalance></GLAccount>
+                     </GLAccounts>
+                   </GLAccountBalanceResult>
+                 </GLAccountBalanceResponse>
+               </soap:Body>
+             </soap:Envelope>`
+          )
+        } as Response);
 
       const client = new YukiClient({
         accessKey: "test-key-12345"
@@ -364,37 +378,37 @@ describe("Accounting Flow Tests", () => {
     });
 
     it("should get receivables summary via client", async () => {
-      global.fetch = vi.fn().mockResolvedValueOnce({
-        ok: true,
-        text: vi.fn().mockResolvedValueOnce(
-          `<?xml version="1.0"?>
-           <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-             <soap:Body>
-               <AuthenticateResponse xmlns="http://www.theyukicompany.com/">
-                 <AuthenticateResult>SESSION-123</AuthenticateResult>
-               </AuthenticateResponse>
-             </soap:Body>
-           </soap:Envelope>`
-        )
-      } as Response);
-
-      global.fetch = vi.fn().mockResolvedValueOnce({
-        ok: true,
-        text: vi.fn().mockResolvedValueOnce(
-          `<?xml version="1.0"?>
-           <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-             <soap:Body>
-               <OutstandingDebtorItemsResponse xmlns="http://www.theyukicompany.com/">
-                 <OutstandingDebtorItemsResult>
-                   <Items>
-                     <Item><ItemID>INV001</ItemID><Amount>5000</Amount><DaysOverdue>5</DaysOverdue></Item>
-                   </Items>
-                 </OutstandingDebtorItemsResult>
-               </OutstandingDebtorItemsResponse>
-             </soap:Body>
-           </soap:Envelope>`
-        )
-      } as Response);
+      global.fetch = vi.fn()
+        .mockResolvedValueOnce({
+          ok: true,
+          text: vi.fn().mockResolvedValueOnce(
+            `<?xml version="1.0"?>
+             <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+               <soap:Body>
+                 <AuthenticateResponse xmlns="http://www.theyukicompany.com/">
+                   <AuthenticateResult>SESSION-123</AuthenticateResult>
+                 </AuthenticateResponse>
+               </soap:Body>
+             </soap:Envelope>`
+          )
+        } as Response)
+        .mockResolvedValueOnce({
+          ok: true,
+          text: vi.fn().mockResolvedValueOnce(
+            `<?xml version="1.0"?>
+             <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+               <soap:Body>
+                 <OutstandingDebtorItemsResponse xmlns="http://www.theyukicompany.com/">
+                   <OutstandingDebtorItemsResult>
+                     <Items>
+                       <Item><ItemID>INV001</ItemID><Amount>5000</Amount><DaysOverdue>5</DaysOverdue></Item>
+                     </Items>
+                   </OutstandingDebtorItemsResult>
+                 </OutstandingDebtorItemsResponse>
+               </soap:Body>
+             </soap:Envelope>`
+          )
+        } as Response);
 
       const client = new YukiClient({
         accessKey: "test-key-12345"
@@ -411,29 +425,29 @@ describe("Accounting Flow Tests", () => {
     });
 
     it("should get profit and loss via client", async () => {
-      global.fetch = vi.fn().mockResolvedValueOnce({
-        ok: true,
-        text: vi.fn().mockResolvedValueOnce(
-          `<?xml version="1.0"?>
-           <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-             <soap:Body>
-               <AuthenticateResponse xmlns="http://www.theyukicompany.com/">
-                 <AuthenticateResult>SESSION-123</AuthenticateResult>
-               </AuthenticateResponse>
-             </soap:Body>
-           </soap:Envelope>`
-        )
-      } as Response);
-
-      global.fetch = vi.fn().mockResolvedValueOnce({
-        ok: true,
-        text: vi.fn().mockResolvedValueOnce(
-          `<?xml version="1.0"?>
-           <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-             <soap:Body>
-               <NetRevenueResponse xmlns="http://www.theyukicompany.com/">
-                 <NetRevenueResult>
-                   <TotalRevenue>100000</TotalRevenue>
+      global.fetch = vi.fn()
+        .mockResolvedValueOnce({
+          ok: true,
+          text: vi.fn().mockResolvedValueOnce(
+            `<?xml version="1.0"?>
+             <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+               <soap:Body>
+                 <AuthenticateResponse xmlns="http://www.theyukicompany.com/">
+                   <AuthenticateResult>SESSION-123</AuthenticateResult>
+                 </AuthenticateResponse>
+               </soap:Body>
+             </soap:Envelope>`
+          )
+        } as Response)
+        .mockResolvedValueOnce({
+          ok: true,
+          text: vi.fn().mockResolvedValueOnce(
+            `<?xml version="1.0"?>
+             <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+               <soap:Body>
+                 <NetRevenueResponse xmlns="http://www.theyukicompany.com/">
+                   <NetRevenueResult>
+                     <TotalRevenue>100000</TotalRevenue>
                    <TotalExpenses>60000</TotalExpenses>
                    <NetIncome>40000</NetIncome>
                  </NetRevenueResult>

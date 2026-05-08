@@ -52,6 +52,12 @@ export class YukiSoapClient {
         body,
         signal: controller.signal
       });
+      if (!response.ok) {
+        const statusText = await response.text().catch(() => "(no body)");
+        throw new YukiSoapFaultError(
+          `HTTP ${response.status} from Yuki API (${options.service}/${options.method}): ${statusText.slice(0, 200)}`
+        );
+      }
       xmlText = await response.text();
     } finally {
       clearTimeout(timeout);

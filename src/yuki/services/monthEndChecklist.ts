@@ -61,7 +61,7 @@ export class MonthEndChecklistService {
         period
       );
       items.push({
-        id: "gl_reconciliation",
+        id: "gl-reconciliation",
         title: "GL Account Reconciliation",
         status: transactions.length > 0 ? "completed" : "pending",
         description: `${transactions.length} transactions processed`,
@@ -72,7 +72,7 @@ export class MonthEndChecklistService {
       const vatReturns = await this.vat.getVATReturnList(administrationId, period, period);
       const vatStatus = vatReturns.find((r) => r.status === "Filed" || r.status === "Submitted");
       items.push({
-        id: "vat_filing",
+        id: "vat-filing",
         title: "VAT Filing",
         status: vatStatus ? "completed" : "pending",
         description: vatStatus
@@ -86,7 +86,7 @@ export class MonthEndChecklistService {
       const questions = await this.backoffice.getOutstandingQuestions(administrationId);
       const highPriorityQuestions = questions.filter((q) => q.priority === "High");
       items.push({
-        id: "backoffice_questions",
+        id: "backoffice-issues",
         title: "Back-office Questions Resolution",
         status: highPriorityQuestions.length === 0 ? "completed" : "warning",
         description: `${questions.length} total questions, ${highPriorityQuestions.length} high priority`,
@@ -99,7 +99,7 @@ export class MonthEndChecklistService {
       const workflow = await this.backoffice.getWorkflow(administrationId);
       const pendingWorkflow = workflow.filter((w) => w.status === "Pending" || w.status === "Waiting");
       items.push({
-        id: "workflow_completion",
+        id: "workflow-completion",
         title: "Workflow Task Completion",
         status: pendingWorkflow.length === 0 ? "completed" : "warning",
         description: `${workflow.length} workflow items total, ${pendingWorkflow.length} pending`,

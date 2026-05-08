@@ -22,8 +22,10 @@ function generateRequestId(): string {
   return `req_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
 }
 
+export type SafeYukiConfig = Omit<YukiConfig, "accessKey"> & { accessKeyConfigured: boolean };
+
 export class YukiClient {
-  public readonly config: YukiConfig;
+  private readonly _config: YukiConfig;
   private readonly domains: DomainService;
   private readonly accounting: AccountingService;
   private readonly accountingInfo: AccountingInfoService;
@@ -37,16 +39,22 @@ export class YukiClient {
   private readonly integration: IntegrationService;
   private readonly monthEndChecklist: MonthEndChecklistService;
 
+  /** Returns a redacted config — accessKey is never exposed. */
+  public get config(): SafeYukiConfig {
+    const { accessKey: _key, ...rest } = this._config;
+    return { ...rest, accessKeyConfigured: _key.length > 0 };
+  }
+
   public constructor(pluginConfig: Record<string, unknown> = {}) {
-    this.config = loadYukiConfig(pluginConfig);
+    this._config = loadYukiConfig(pluginConfig);
     const logger = new Logger({
-      level: this.config.logLevel,
-      allowSensitiveDebugLogging: this.config.allowSensitiveDebugLogging
+      level: this._config.logLevel,
+      allowSensitiveDebugLogging: this._config.allowSensitiveDebugLogging
     });
-    const baseUrl = serviceBaseUrl(this.config.country);
-    const guard = new RateLimitGuard(this.config.maxCallsPerMinute, this.config.maxCallsPerDay);
-    const soap = new YukiSoapClient(baseUrl, this.config.requestTimeoutMs, logger, guard);
-    const session = new YukiSessionManager(soap, this.config.accessKey);
+    const baseUrl = serviceBaseUrl(this._config.country);
+    const guard = new RateLimitGuard(this._config.maxCallsPerMinute, this._config.maxCallsPerDay);
+    const soap = new YukiSoapClient(baseUrl, this._config.requestTimeoutMs, logger, guard);
+    const session = new YukiSessionManager(soap, this._config.accessKey);
     this.domains = new DomainService(soap, session);
     this.accounting = new AccountingService(soap, session);
     this.accountingInfo = new AccountingInfoService(soap, session);
@@ -65,6 +73,21 @@ export class YukiClient {
       this.vat,
       this.backoffice
     );
+  }
+
+  /**
+   * Strips all `rawData` fields from service layer responses before returning
+   * to the LLM, unless `includeRawResponses` is explicitly enabled.
+   * This prevents raw Yuki API data (IBAN numbers, full contact records, etc.)
+   * from leaking into tool responses by default.
+   */
+  private safeData<T>(data: T): T {
+    if (this._config.includeRawResponses) {
+      return data;
+    }
+    return JSON.parse(JSON.stringify(data, (_key, value) =>
+      _key === "rawData" ? undefined : value
+    )) as T;
   }
 
   public async healthCheck(): Promise<YukiResponseEnvelope> {

@@ -116,7 +116,7 @@ export class ArchiveService {
     };
   }
 
-  public async downloadDocument(documentId: string): Promise<{ data: string; contentType?: string; filename?: string }> {
+  public async downloadDocument(documentId: string): Promise<{ documentId: string; data: string; contentType?: string; filename?: string }> {
     const sessionID = await this.sessionManager.getSessionId();
     
     // First get metadata
@@ -136,6 +136,7 @@ export class ArchiveService {
     const fileData = safeString(raw as unknown) ?? "";
 
     return {
+      documentId,
       data: fileData,
       contentType: metadata.contentType,
       filename: metadata.filename

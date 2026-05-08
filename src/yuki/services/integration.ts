@@ -17,6 +17,16 @@ function safeString(value: unknown): string | undefined {
   return typeof value === "string" ? value : undefined;
 }
 
+function deriveAdminStatus(item: Record<string, unknown>): string {
+  const explicit = safeString(item.Status) ?? safeString(item.State);
+  if (explicit) return explicit;
+  // Dutch: HoudtBedrijfsadministratie = "1" means active administration
+  const hba = safeString(item.HoudtBedrijfsadministratie);
+  if (hba === "1" || hba?.toLowerCase() === "true") return "active";
+  if (hba === "0" || hba?.toLowerCase() === "false") return "inactive";
+  return "active"; // default assumption for a reachable administration
+}
+
 export class IntegrationService {
   private readonly soapClient: YukiSoapClient;
   private readonly sessionManager: YukiSessionManager;
@@ -39,14 +49,14 @@ export class IntegrationService {
 
     const item = raw as Record<string, unknown>;
     return {
-      administrationId: String(administrationId),
-      companyName: safeString(item.CompanyName) ?? safeString(item.Name),
-      businessType: safeString(item.BusinessType) ?? safeString(item.Type),
-      country: safeString(item.Country),
-      currency: safeString(item.Currency),
-      fiscalYear: safeString(item.FiscalYear),
-      lastModified: safeString(item.LastModified) ?? safeString(item.ModifiedDate),
-      status: safeString(item.Status) ?? safeString(item.State),
+      administrationId: safeString(item.AdministrationId) ?? safeString(item.AdministrationID) ?? String(administrationId),
+      companyName: safeString(item.CompanyName) ?? safeString(item.Company) ?? safeString(item.Name),
+      businessType: safeString(item.BusinessType) ?? safeString(item.HoudtBedrijfsadministratie) ?? safeString(item.Type),
+      country: safeString(item.Country) ?? safeString(item.LandCode),
+      currency: safeString(item.Currency) ?? safeString(item.Valuta),
+      fiscalYear: safeString(item.FiscalYear) ?? safeString(item.RekenjaarOm),
+      lastModified: safeString(item.LastModified) ?? safeString(item.DatumMutatie) ?? safeString(item.ModifiedDate),
+      status: deriveAdminStatus(item),
       rawData: raw
     };
   }

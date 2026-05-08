@@ -33,7 +33,7 @@ describe("XML Validator Tests", () => {
       const xml = '<?xml version="1.0"?><root><item>test</root>';
       const result = validateXmlWellFormedness(xml);
       expect(result.valid).toBe(false);
-      expect(result.errors.some((e) => e.includes("Unbalanced"))).toBe(true);
+      expect(result.errors.some((e) => e.includes("XML parse error"))).toBe(true);
     });
 
     it("should warn about unescaped ampersands", () => {
@@ -46,7 +46,7 @@ describe("XML Validator Tests", () => {
       const xml = '<?xml version="1.0"?><root><![CDATA[data</root>';
       const result = validateXmlWellFormedness(xml);
       expect(result.valid).toBe(false);
-      expect(result.errors.some((e) => e.includes("CDATA"))).toBe(true);
+      expect(result.errors.some((e) => e.includes("XML parse error"))).toBe(true);
     });
 
     it("should detect null bytes", () => {

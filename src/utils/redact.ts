@@ -1,9 +1,10 @@
 const REDACTION_TOKEN = "[REDACTED]";
 
 const SECRET_PATTERNS: RegExp[] = [
-  /([A-Za-z0-9]{5,}-){2,}[A-Za-z0-9]{3,}/g,
-  /\b(sessionid|accesskey|apikey|token|password)\b\s*[:=]\s*[^\s<\"']+/gi,
-  /\b[A-Z]{2}\d{2}[A-Z0-9]{8,30}\b/g
+  /([A-Za-z0-9]{5,}-){2,}[A-Za-z0-9]{3,}/g, // Hyphenated tokens (old pattern)
+  /\b(sessionid|accesskey|apikey|token|password)\b\s*[:=]\s*[^\s<\"']+/gi, // Key=value secrets
+  /\b[A-Z]{2}\d{2}[A-Z0-9]{8,30}\b/g, // IBAN numbers
+  /\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\b/g // UUID/GUID session IDs
 ];
 
 export function redactText(input: string): string {
