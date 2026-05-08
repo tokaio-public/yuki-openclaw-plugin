@@ -54,7 +54,13 @@ export class CLICommands {
 
         return { exitCode: 0, output };
       } else {
-        return { exitCode: 1, output: CLIFormatter.formatText("Health check failed: " + result.message, "error") };
+        const warningSummary = Array.isArray(result.warnings) && result.warnings.length > 0
+          ? ` (${result.warnings[0]})`
+          : "";
+        return {
+          exitCode: 1,
+          output: CLIFormatter.formatText(`Health check failed${warningSummary}`, "error")
+        };
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
@@ -343,10 +349,10 @@ export class CLICommands {
    * Version information
    */
   async version(): Promise<CommandResult> {
-    const pkg = await import("../../package.json", { assert: { type: "json" } }).catch(() => ({
+    const pkg = await import("../../package.json", { with: { type: "json" } }).catch(() => ({
       default: { version: "0.1.0" }
     }));
-    const version = (pkg.default?.version || pkg.version) as string;
+    const version = pkg.default?.version ?? "0.1.0";
 
     const output = this.ctx.format === "json"
       ? CLIFormatter.formatJSON({ version, name: "openclaw-yuki" })
@@ -385,7 +391,7 @@ EXAMPLES
   yuki-cli list-administrations --format table
   yuki-cli health --verbose
 
-For more information, see: https://github.com/Paul-Geudens_argenta/yuki-openclaw-plugin
+For more information, see: https://github.com/tokaio-public/yuki-openclaw-plugin
     `.trim();
 
     return { exitCode: 0, output: help };
@@ -397,11 +403,16 @@ For more information, see: https://github.com/Paul-Geudens_argenta/yuki-openclaw
  */
 export async function executeCLICommand(args: string[], config?: Record<string, unknown>): Promise<CommandResult> {
   const [command, ...restArgs] = args;
+  const formatArg = restArgs.find((arg, i) => restArgs[i - 1] === "--format")?.toLowerCase();
+  const format: CommandContext["format"] =
+    formatArg === "json" || formatArg === "table" || formatArg === "csv" || formatArg === "text"
+      ? formatArg
+      : "text";
 
   const ctx: CommandContext = {
     verbose: restArgs.includes("--verbose") || restArgs.includes("-v"),
-    format: (restArgs.find((arg, i) => restArgs[i - 1] === "--format")?.toLowerCase() as any) || "text",
-    config
+    format,
+    ...(config !== undefined ? { config } : {})
   };
 
   const commands = new CLICommands(ctx);

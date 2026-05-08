@@ -97,8 +97,9 @@ export function validateInvoiceStructure(xmlString: string, invoiceType: "sales"
 
   // Check for encodings
   const encodingMatch = xmlString.match(/encoding=["']([^"']+)["']/i);
-  if (encodingMatch) {
-    const encoding = encodingMatch[1].toLowerCase();
+  const encodingCandidate = encodingMatch?.[1];
+  if (encodingCandidate) {
+    const encoding = encodingCandidate.toLowerCase();
     if (!["utf-8", "utf8", "iso-8859-1", "windows-1252"].includes(encoding)) {
       warnings.push(`Unusual encoding detected: ${encoding}; UTF-8 is recommended`);
     }
